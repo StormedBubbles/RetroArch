@@ -1617,7 +1617,8 @@ int generic_menu_entry_action(
                   entry->label, entry->type, i, entry->entry_idx);
          break;
       case MENU_ACTION_SEARCH:
-         menu_input_dialog_start_search();
+         // disable search action
+         // menu_input_dialog_start_search();
          break;
       case MENU_ACTION_SCAN:
          if (cbs && cbs->action_scan)
