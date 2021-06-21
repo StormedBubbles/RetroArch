@@ -36499,6 +36499,8 @@ static bool retroarch_load_shader_preset_internal(
       const char *special_name)
 {
    unsigned i;
+   struct rarch_state *p_rarch = &rarch_st;
+   settings_t *settings        = p_rarch->configuration_settings;
 
    static enum rarch_shader_type types[] =
    {
@@ -36524,8 +36526,13 @@ static bool retroarch_load_shader_preset_internal(
          if (string_is_empty(special_name))
             break;
 
-         fill_pathname_join(s, shader_directory, special_name, len);
-         strlcat(s, video_shader_get_preset_extension(types[i]), len);
+         if (strcmp(special_name, "config")!=0) {
+             fill_pathname_join(s, shader_directory, special_name, len);
+             strlcat(s, video_shader_get_preset_extension(types[i]), len);
+         } else {
+             strlcpy(s, settings->paths.path_shader, PATH_MAX_LENGTH);
+             RARCH_LOG("[Shaders]: Configuration file shader set to %s.\n", settings->paths.path_shader);
+         }
       }
 
       if (path_is_valid(s))
@@ -36545,7 +36552,9 @@ static bool retroarch_load_shader_preset_internal(
  * core-specific:   $CONFIG_DIR/$CORE_NAME/$CORE_NAME.$PRESET_EXT
  * folder-specific: $CONFIG_DIR/$CORE_NAME/$FOLDER_NAME.$PRESET_EXT
  * game-specific:   $CONFIG_DIR/$CORE_NAME/$GAME_NAME.$PRESET_EXT
+ * config:          preset from the configuration file, configured via 'video_shader'
  *
+ *retroarch_load_shader_preset_internal
  * $CONFIG_DIR is expected to be Menu Config directory, or failing that, the
  * directory where retroarch.cfg is stored.
  *
@@ -36631,6 +36640,14 @@ static bool retroarch_load_shader_preset(struct rarch_state *p_rarch,
                sizeof(shader_path),
                dirs[i], NULL,
                "global"))
+         goto success;
+      /* Configuration file shader path found? */
+      if (retroarch_load_shader_preset_internal(
+              shader_path,
+              sizeof(shader_path),
+              dirs[i],
+              NULL,
+              "config"))
          goto success;
    }
    return false;
