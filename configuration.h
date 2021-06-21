@@ -449,6 +449,7 @@ typedef struct settings
       char directory_autoconfig[PATH_MAX_LENGTH];
       char directory_video_filter[PATH_MAX_LENGTH];
       char directory_video_shader[PATH_MAX_LENGTH];
+      char path_shader[PATH_MAX_LENGTH];
       char directory_libretro[PATH_MAX_LENGTH];
       char directory_cursor[PATH_MAX_LENGTH];
       char directory_input_remapping[PATH_MAX_LENGTH];
